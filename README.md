@@ -1,13 +1,13 @@
-# Persona Cassette Starter
+# Persona: Cassette（角色卡带）
 
-一个**零第三方依赖、开箱即用、内核与宿主彻底解耦**的角色长期记忆、通用 MCP 连接器与标准 OpenAI 对话工程模板。
+一个**零第三方依赖、开箱即用、内核与宿主彻底解耦**的角色长期记忆、通用 MCP 连接器与标准 OpenAI 对话工程。
 
 ---
 
 ## 仓库分层结构
 
 ```text
-persona-cassette-starter/
+persona-cassette/
 ├── kit/                          # 【1. 纯净卡带引擎】宿主中立记忆与上下文拼装内核（零特定客户端耦合）
 ├── cassettes/starter-persona/    # 【2. 空白角色卡带模板】纯文本 Git 友好记忆仓，改 SOUL.md 即可上岗
 ├── harness-connector/            # 【3. 通用底座连接器】即插即用标准 MCP + 工作区单卡直读/多卡互锁 + 通用规则渲染
@@ -40,9 +40,9 @@ persona-cassette-starter/
   "mcpServers": {
     "persona-cassette": {
       "command": "node",
-      "args": ["/path/to/persona-cassette-starter/harness-connector/mcp-server.mjs"],
+      "args": ["/path/to/persona-cassette/harness-connector/mcp-server.mjs"],
       "env": {
-        "PMV_CARTRIDGES_DIR": "/path/to/persona-cassette-starter/cassettes"
+        "PMV_CARTRIDGES_DIR": "/path/to/persona-cassette/cassettes"
       }
     }
   }

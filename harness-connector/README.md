@@ -42,9 +42,9 @@
   "mcpServers": {
     "persona-cassette": {
       "command": "node",
-      "args": ["/path/to/persona-cassette-starter/harness-connector/mcp-server.mjs"],
+      "args": ["/path/to/persona-cassette/harness-connector/mcp-server.mjs"],
       "env": {
-        "PMV_CARTRIDGES_DIR": "/path/to/persona-cassette-starter/cassettes"
+        "PMV_CARTRIDGES_DIR": "/path/to/persona-cassette/cassettes"
       }
     }
   }

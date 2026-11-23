@@ -1,10 +1,15 @@
 {
-  "name": "persona-cassette-starter",
+  "name": "persona-cassette",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "author": "AYun327028",
   "license": "CC-BY-NC-SA-4.0",
+  "homepage": "https://github.com/AYun327028/persona-cassette",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AYun327028/persona-cassette.git"
+  },
   "description": "Portable zero-dependency monorepo combining Persona Memory Vault kit, a blank persona cassette template, a host-agnostic harness-connector MCP server, a pure OpenAI CLI chat frontend, and an isolated Antigravity deep-tuned example.",
   "engines": {
     "node": ">=22.0.0"
