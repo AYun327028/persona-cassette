@@ -1,0 +1,95 @@
+{
+  "schema": "persona-memory-vault/v1",
+  "character": {
+    "id": "starter",
+    "name": "Starter",
+    "display_name": "空白角色卡带",
+    "aliases": [
+      "Starter",
+      "空白角色卡带"
+    ]
+  },
+  "preferred_models": {
+    "chat": {
+      "status": "unsigned",
+      "provider": null,
+      "model_id": null,
+      "sign_source": "unsigned",
+      "signed_by": null,
+      "signed_at": null,
+      "note": "对话主力模型签名；无法自动识别时由用户现场代签"
+    },
+    "dream": {
+      "status": "unsigned",
+      "provider": null,
+      "model_id": null,
+      "sign_source": "unsigned",
+      "signed_by": null,
+      "signed_at": null,
+      "note": "后台做梦整理模型签名"
+    },
+    "embedding": {
+      "status": "unsigned",
+      "provider": null,
+      "model_id": null,
+      "dimension": null,
+      "normalize": true,
+      "model_sig": null,
+      "sign_source": "unsigned",
+      "signed_by": null,
+      "signed_at": null,
+      "note": "Phase 1 留空签名位，留待 Phase 2 首次烘焙快照时由用户现场选定并签写"
+    },
+    "decision": {
+      "status": "unsigned",
+      "optional": true,
+      "provider": null,
+      "adapter": null,
+      "model_id": null,
+      "sign_source": "unsigned",
+      "signed_by": null,
+      "signed_at": null,
+      "note": "可选外部判断服务接口签名（如 gemini-decisions / typesafe-jev / openai-compat-json / custom-http）；未签时无损降级"
+    }
+  },
+  "signature_policy": {
+    "forbid_guessed_model_name": true,
+    "unknown_values": [
+      "",
+      "auto",
+      "unknown",
+      "default"
+    ],
+    "on_unverifiable_model": "prompt_user_to_sign",
+    "on_embedding_mismatch": "abort_and_request_full_rebake"
+  },
+  "budgets": {
+    "index_max_lines": 150,
+    "timeline_section_max_items": 12,
+    "timeline_salience_floor": 0.55,
+    "recall_top_k": 5
+  },
+  "context_assembly": {
+    "system_sections": [
+      "soul",
+      "user_profile",
+      "l0_contract",
+      "index"
+    ],
+    "user_injection_order": [
+      "chronicle_board_update",
+      "recalled_memory",
+      "signature_notice"
+    ],
+    "user_separator": "\n\n---\n\n",
+    "history_backfill_turns": 10,
+    "backfill_from_ledger": true,
+    "backfill_max_msg_chars": 2400,
+    "recall_dedup_window_turns": 10,
+    "fallback_to_spans": true,
+    "strip_injected_tags_from_history": true,
+    "dedup_current_session_timeline": true,
+    "delivery_mode": "ephemeral",
+    "auto_dream_on_commit": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "pmv-cartridges/v1",
+  "note": "Copy to cartridges.local.json to customize cartridge paths. Relative paths resolve against kit/.",
+  "cartridges_dir": "../cassettes",
+  "default_cartridge": "starter",
+  "cartridges": {
+    "starter": "../cassettes/starter-persona"
+  }
+}

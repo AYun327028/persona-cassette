@@ -1,0 +1,16 @@
+{
+  "name": "persona-memo-kit",
+  "version": "0.1.0",
+  "description": "Shared toolkit and offline RiverMemo studio for Persona Memory Vault repositories.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "bin": {
+    "pmv": "./bin/pmv.mjs"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "pmv": "node ./bin/pmv.mjs"
+  }
+}

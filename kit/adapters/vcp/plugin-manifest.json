@@ -1,0 +1,70 @@
+{
+  "manifestVersion": "1.0.0",
+  "name": "PersonaMemoryVault",
+  "version": "0.3.0",
+  "displayName": "Persona Memory Vault (跨平台卡带记忆)",
+  "description": "连接 persona-memo-kit 独立单角色记忆卡带：System Prompt 锁定 L0+L1，每轮仅在最后一条 User 消息前注入 L2 RiverMemo 召回，并提供 O(1) Span 切片查证工具。",
+  "author": "Algernon / PMV",
+  "pluginType": "hybridservice",
+  "entryPoint": {
+    "type": "nodejs",
+    "script": "index.cjs"
+  },
+  "communication": {
+    "protocol": "direct",
+    "timeout": 15000
+  },
+  "configSchema": {
+    "PMV_KIT_ROOT": {
+      "type": "string",
+      "description": "persona-memo-kit 根目录路径",
+      "default": ""
+    },
+    "PMV_DEFAULT_CARTRIDGE": {
+      "type": "string",
+      "description": "默认挂载的角色卡带 ID 或路径",
+      "default": "starter"
+    },
+    "PMV_RECORD_LEDGER": {
+      "type": "boolean",
+      "description": "是否自动将当前用户发言追加进 ledger/sessions/vcp/",
+      "default": true
+    },
+    "PMV_AUTO_ATTACH": {
+      "type": "boolean",
+      "description": "未写 [[PMV::id]] 触发符时是否自动挂载默认卡带",
+      "default": false
+    }
+  },
+  "capabilities": {
+    "systemPromptPlaceholders": [
+      {
+        "placeholder": "{{PMV_SYSTEM_PREFIX}}",
+        "description": "展开当前角色卡带的 L0 灵魂设定与 L1 二合一总索引",
+        "isDynamic": true
+      }
+    ],
+    "invocationCommands": [
+      {
+        "commandIdentifier": "PMV_SearchSpans",
+        "description": "检索不可变账本的轻量语义段落指针（不读全量日志）",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」PersonaMemoryVault「末」,\ncommand:「始」PMV_SearchSpans「末」,\ncartridge:「始」starter「末」,\nquery:「始」RiverMemo「末」\n<<<[END_TOOL_REQUEST]>>>"
+      },
+      {
+        "commandIdentifier": "PMV_ReadSpan",
+        "description": "按 span_id 做 O(1) 精准字节切片读取账本原文",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」PersonaMemoryVault「末」,\ncommand:「始」PMV_ReadSpan「末」,\nspan_id:「始」antigravity:b9ba66bc:sp04「末」,\npad_steps:「始」1「末」\n<<<[END_TOOL_REQUEST]>>>"
+      },
+      {
+        "commandIdentifier": "PMV_ReadWiki",
+        "description": "读取角色卡带 wiki/ 下的指定 OKF 记忆页",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」PersonaMemoryVault「末」,\ncommand:「始」PMV_ReadWiki「末」,\npath:「始」projects/pmv-architecture.md「末」\n<<<[END_TOOL_REQUEST]>>>"
+      },
+      {
+        "commandIdentifier": "PMV_Status",
+        "description": "查看角色卡带签名状态、快照与做梦计数",
+        "example": "<<<[TOOL_REQUEST]>>>\ntool_name:「始」PersonaMemoryVault「末」,\ncommand:「始」PMV_Status「末」\n<<<[END_TOOL_REQUEST]>>>"
+      }
+    ]
+  }
+}

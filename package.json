@@ -1,0 +1,24 @@
+{
+  "name": "persona-cassette-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "author": "AYun327028",
+  "license": "CC-BY-NC-SA-4.0",
+  "description": "Portable zero-dependency monorepo combining Persona Memory Vault kit, a blank persona cassette template, a host-agnostic harness-connector MCP server, a pure OpenAI CLI chat frontend, and an isolated Antigravity deep-tuned example.",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "node --test kit/tests/*.test.mjs harness-connector/tests/*.test.mjs examples/antigravity-tuned/tests/*.test.mjs",
+    "test:kit": "node --test kit/tests/*.test.mjs",
+    "test:connector": "node --test harness-connector/tests/*.test.mjs",
+    "test:antigravity-example": "node --test examples/antigravity-tuned/tests/*.test.mjs",
+    "serve": "node kit/bin/pmv.mjs serve --port 3891",
+    "mcp": "node harness-connector/mcp-server.mjs",
+    "pmv": "node kit/bin/pmv.mjs",
+    "status": "node kit/bin/pmv.mjs status",
+    "studio": "node kit/bin/pmv.mjs studio",
+    "install-antigravity-example": "node examples/antigravity-tuned/install.mjs --enable"
+  }
+}

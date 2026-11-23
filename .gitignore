@@ -1,0 +1,23 @@
+# Local private configs & secrets (never commit!)
+*.local.json
+.env
+.env.*
+config.env
+
+# Runtime logs & chat exports
+chat-cli/logs/
+*.log
+
+# Native SQLite WAL/SHM & optional local binaries
+*.sqlite-wal
+*.sqlite-shm
+kit/native/vexus-lite/
+
+# Python / Node / OS artifacts
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak

@@ -1,0 +1,21 @@
+schema: pmv-taxonomy/v1
+domains:
+  - general
+  - agent-memory
+  - engineering
+facets:
+  topic:
+    description: 主题关键词维度
+  workflow:
+    description: 日常协作工作流维度
+aliases: {}
+blacklist:
+  - 总结
+  - 笔记
+  - 对话记录
+  - 日记
+  - AI生成
+tag_chain_rules:
+  min_length: 2
+  max_length: 8
+  require_body_closure: true

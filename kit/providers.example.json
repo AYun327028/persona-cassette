@@ -1,0 +1,72 @@
+{
+  "schema": "pmv-providers/v1",
+  "note": "Copy to providers.local.json and configure local endpoints. Never store real API keys in git; use api_key_env.",
+  "embedding_providers": [
+    {
+      "id": "example-local-qwen-emb",
+      "provider": "openai-compat",
+      "model_id": "qwen3-embedding-4b",
+      "dimension": 2560,
+      "normalize": true,
+      "base_url": "http://127.0.0.1:8080/v1/embeddings",
+      "api_key_env": "LOCAL_EMBEDDING_API_KEY"
+    },
+    {
+      "id": "example-gemini-emb",
+      "provider": "gemini",
+      "model_id": "gemini-embedding-001",
+      "dimension": 1536,
+      "normalize": true,
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+      "api_key_env": "GEMINI_API_KEY"
+    }
+  ],
+  "decision_providers": [
+    {
+      "id": "example-gemini-decisions",
+      "provider": "gemini",
+      "adapter": "gemini-decisions",
+      "model_id": "gemini-decision-1",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-decision-1:decide",
+      "api_key_env": "GEMINI_API_KEY",
+      "timeout_ms": 4000
+    },
+    {
+      "id": "example-typesafe-jev",
+      "provider": "typesafe",
+      "adapter": "typesafe-jev",
+      "model_id": "jev-latest",
+      "base_url": "https://api.typesafe.ai/v1/systemone",
+      "api_key_env": "TYPESAFE_API_KEY",
+      "timeout_ms": 4000
+    },
+    {
+      "id": "example-openai-compat-judge",
+      "provider": "openai-compat",
+      "adapter": "openai-compat-json",
+      "model_id": "your-small-router-model",
+      "base_url": "http://127.0.0.1:8080/v1",
+      "api_key_env": "LOCAL_LLM_API_KEY",
+      "timeout_ms": 6000
+    },
+    {
+      "id": "example-custom-http-judge",
+      "provider": "custom",
+      "adapter": "custom-http",
+      "model_id": "custom-decision-v1",
+      "base_url": "http://127.0.0.1:9000/decide",
+      "api_key_env": "CUSTOM_DECISION_KEY",
+      "allow_unauthenticated": true,
+      "timeout_ms": 4000
+    }
+  ],
+  "llm_providers": [
+    {
+      "id": "example-gemini-chat",
+      "provider": "gemini",
+      "model_id": "gemini-3-pro",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "api_key_env": "GEMINI_API_KEY"
+    }
+  ]
+}

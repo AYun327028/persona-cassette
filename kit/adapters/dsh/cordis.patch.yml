@@ -1,0 +1,8 @@
+# Merge into your DeepSeek Harness cordis.yml and replace <REPO_ROOT> with your clone path.
+plugins:
+  pmv-memory:
+    name: 'file:///<REPO_ROOT>/kit/adapters/dsh/host.js'
+    config:
+      kitRoot: '<REPO_ROOT>/kit'
+      cartridgesDir: '<REPO_ROOT>/cassettes'
+      defaultCartridge: 'starter'

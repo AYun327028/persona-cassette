@@ -1,0 +1,14 @@
+{
+  "schema": "pmv-ag-mode-config/v1",
+  "default_cartridge": "starter",
+  "default_mode_without_workspace": "work",
+  "assistant_workspaces": [],
+  "work_workspaces": [
+    "../../kit",
+    "../../harness-connector"
+  ],
+  "persona_concentration": {
+    "reboost_on_compaction": true,
+    "reboost_interval_turns": 20
+  }
+}

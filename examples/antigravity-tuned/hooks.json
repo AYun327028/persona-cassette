@@ -1,0 +1,25 @@
+{
+  "persona-cassette-memory": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node \"./hook-session-start.mjs\"",
+        "timeout": 10
+      }
+    ],
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node \"./hook-pre-invocation.mjs\"",
+        "timeout": 15
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node \"./hook-stop.mjs\"",
+        "timeout": 10
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@local/dsh-pmv-memory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DeepSeek Harness adapter bridging assistantCards.registerMemory to Persona Memory Vault cartridges.",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "exports": {
+    ".": "./host.js",
+    "./core": "./core.mjs",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "host": {
+      "entry": "./host.js"
+    }
+  }
+}

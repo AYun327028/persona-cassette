@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "persona-cassette": {
+      "command": "node",
+      "args": [
+        "<YOUR_CLONE_PATH>/harness-connector/mcp-server.mjs"
+      ],
+      "env": {
+        "PMV_CARTRIDGES_DIR": "<YOUR_CLONE_PATH>/cassettes"
+      }
+    }
+  }
+}

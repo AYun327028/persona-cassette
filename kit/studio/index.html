@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiverMemo 离线编辑器 · Persona Memory Studio</title>
+  <style>
+    :root {
+      --bg: #0f1218;
+      --panel: #171c26;
+      --panel-2: #1e2533;
+      --border: #2a3345;
+      --text: #e7ecf4;
+      --muted: #93a1b8;
+      --accent: #e5a93c;
+      --ok: #3cc68a;
+      --warn: #f0b44b;
+      --danger: #eb5757;
+      --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+      --sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: #12161f;
+    }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; }
+    header .sub { color: var(--muted); font-size: 12px; font-family: var(--mono); }
+    main {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 20px 24px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .full { grid-column: 1 / -1; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f3f6fb;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-family: var(--mono);
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+    }
+    .badge.ok { color: var(--ok); border-color: rgba(60,198,138,0.4); }
+    .badge.warn { color: var(--warn); border-color: rgba(240,180,75,0.4); }
+    .badge.danger { color: var(--danger); border-color: rgba(235,87,87,0.45); }
+    .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 13px; margin-bottom: 12px; }
+    .kv .k { color: var(--muted); }
+    .kv .v { font-family: var(--mono); word-break: break-all; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+    select, input, textarea {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    input.mono, textarea.mono { font-family: var(--mono); }
+    button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 13px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover { border-color: var(--accent); }
+    button.primary { background: var(--accent); color: #11151d; border-color: var(--accent); font-weight: 600; }
+    button.danger { background: rgba(235,87,87,0.16); color: #ff8e8e; border-color: rgba(235,87,87,0.5); }
+    details.danger-box {
+      margin-top: 12px;
+      border: 1px solid rgba(235, 87, 87, 0.45);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(235, 87, 87, 0.06);
+    }
+    details.danger-box summary {
+      cursor: pointer;
+      color: #ff9f9f;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .warn-note { font-size: 12px; color: #f6b6b6; margin: 8px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+    .field input { width: 100%; }
+    pre {
+      background: #0b0e14;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      max-height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+      margin: 8px 0 0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+    th, td { border-bottom: 1px solid var(--border); padding: 7px 8px; text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    .delta-pos { color: var(--ok); font-family: var(--mono); }
+    .delta-neg { color: var(--danger); font-family: var(--mono); }
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+      display: none; align-items: center; justify-content: center; z-index: 50;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(520px, 92vw);
+      background: var(--panel);
+      border: 1px solid rgba(235,87,87,0.65);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .modal h3 { margin: 0 0 10px; color: #ff9c9c; }
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>RiverMemo 离线编辑器与快照烘焙台</h1>
+      <div class="sub" id="vaultMeta">Loading vault...</div>
+    </div>
+    <button onclick="refreshState()">刷新状态</button>
+  </header>
+
+  <main>
+    <!-- Panel 1: Signature & Bake -->
+    <section>
+      <h2>
+        1. 签名校验与快照烘焙
+        <span class="badge" id="sigBadge">-</span>
+      </h2>
+      <div class="kv" id="sigDetails"></div>
+      <div class="row">
+        <select id="providerSelect" style="flex:1"></select>
+        <button class="primary" onclick="runBake(false)">一键烘焙快照 (Bake)</button>
+      </div>
+      <pre id="bakeLog">等待操作...</pre>
+    </section>
+
+    <!-- Panel 2: Tag & River Lint -->
+    <section>
+      <h2>
+        2. 标签与河道体检
+        <span class="badge" id="lintBadge">未扫描</span>
+      </h2>
+      <div class="row">
+        <button onclick="runLint(false)">预览体检 (Preview)</button>
+        <button class="primary" onclick="runLint(true)">应用安全修复 & 重建索引</button>
+      </div>
+      <pre id="lintOutput">点击“预览体检”检查 OKF 标签、别名、黑名单与正文闭合情况。</pre>
+    </section>
+
+    <!-- Panel 3: Rule Presets & Filters -->
+    <section class="full">
+      <h2>
+        3. 召回规则预设与过滤器
+        <span class="badge ok" id="presetBadge">balanced</span>
+      </h2>
+      <div class="row">
+        <label>业务预设档：</label>
+        <select id="presetSelect" onchange="onPresetChange()"></select>
+        <label>Top-K：</label>
+        <input id="topKInput" type="number" min="1" max="20" value="5" style="width:72px" />
+        <label>仅限分区 (逗号分隔，留空全选)：</label>
+        <input id="diariesInput" placeholder="projects, domains, decisions" style="flex:1;min-width:200px" />
+        <button onclick="saveRules()">保存规则到快照</button>
+      </div>
+      <div id="presetDesc" style="font-size:12px;color:var(--muted)"></div>
+
+      <details class="danger-box">
+        <summary>⚠️ 高级实验参数（Topology V3 强耦合数学常数 — 默认收起，不建议裸调）</summary>
+        <p class="warn-note">
+          RiverMemo V3 的双尺度 α、Ω 可观测阈值与直接锚点参数之间存在强耦合，随意修改可能同时改变候选边界与排序权限。请配合下方回归对比台检验后再保存。
+        </p>
+        <div class="grid-3">
+          <div class="field"><label>localWeight</label><input id="advLocalWeight" type="number" step="0.02" value="0.6" /></div>
+          <div class="field"><label>transferWeight</label><input id="advTransferWeight" type="number" step="0.02" value="0.4" /></div>
+          <div class="field"><label>topologyBonusCap</label><input id="advTopoCap" type="number" step="0.01" value="0.08" /></div>
+          <div class="field"><label>anchorBonusCap</label><input id="advAnchorCap" type="number" step="0.01" value="0.1" /></div>
+          <div class="field"><label>directAnchor.semanticThreshold</label><input id="advAnchorThresh" type="number" step="0.02" value="0.8" /></div>
+          <div class="field"><label>omegaGamma</label><input id="advOmegaGamma" type="number" step="0.1" value="1" /></div>
+        </div>
+      </details>
+    </section>
+
+    <!-- Panel 4: Regression Test & Trace Diff -->
+    <section class="full">
+      <h2>
+        4. 回归测试与河网 Trace 对比台
+        <span class="badge" id="traceBadge">待测试</span>
+      </h2>
+      <div class="row">
+        <select id="regressionSelect" onchange="pickRegressionQuery()">
+          <option value="">-- 选择预设回归问题或手动输入 --</option>
+        </select>
+        <input id="queryInput" placeholder="输入测试问题，例如：为什么砍掉边干活边记笔记？" style="flex:1;min-width:280px" />
+        <label>Baseline：</label>
+        <select id="baselinePresetSelect"></select>
+        <label>Candidate：</label>
+        <select id="candidatePresetSelect"></select>
+        <button class="primary" onclick="runComparison()">运行对比查询</button>
+      </div>
+      <div id="diffContainer"></div>
+    </section>
+  </main>
+
+  <!-- Mismatch Circuit-Breaker Modal -->
+  <div class="modal-backdrop" id="mismatchModal">
+    <div class="modal">
+      <h3>⚠️ 向量操作签名失配熔断</h3>
+      <p id="mismatchText" style="font-size:13px;color:var(--text)"></p>
+      <p style="font-size:12px;color:var(--muted)">
+        为防止混入异构向量空间导致召回崩坏，系统已拦截增量更新。只有在你确认切换签名并执行全量重新烘焙后才会继续。
+      </p>
+      <div class="row" style="justify-content:flex-end;margin-top:16px">
+        <button onclick="closeModal()">取消操作</button>
+        <button class="danger" onclick="confirmFullRebake()">确认切换签名并全量重烘</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let STATE = null;
+
+    async function api(url, method = 'GET', body = null) {
+      const res = await fetch(url, {
+        method,
+        headers: body ? { 'Content-Type': 'application/json' } : {},
+        body: body ? JSON.stringify(body) : undefined
+      });
+      const data = await res.json();
+      return { status: res.status, ok: res.ok, data };
+    }
+
+    async function refreshState() {
+      const { data } = await api('/api/state');
+      STATE = data;
+      document.getElementById('vaultMeta').textContent =
+        `${data.manifest.character.display_name} (${data.manifest.character.id}) · ${data.vaultPath}`;
+
+      const badge = document.getElementById('sigBadge');
+      const emb = data.embeddingStatus;
+      badge.textContent = emb.state;
+      badge.className = 'badge ' + (emb.state === 'matched' ? 'ok' : emb.state === 'unsigned' ? 'warn' : 'danger');
+
+      const snap = data.snapshotManifest;
+      const modelsSummary = Object.entries(data.manifest.preferred_models || {})
+        .map(([k, v]) => `${k}:${v.model_id || 'unsigned'}`).join(' | ');
+      document.getElementById('sigDetails').innerHTML = `
+        <div class="k">四槽位签名</div><div class="v">${modelsSummary}</div>
+        <div class="k">当前快照</div><div class="v">${snap ? `${snap.snapshot_version} | ${snap.embedding?.model_sig} | files=${snap.counts?.files}, nodes=${snap.counts?.nodes}, edges=${snap.counts?.edges}` : '尚未烘焙'}</div>
+        <div class="k">寻签状态</div><div class="v">${emb.message}</div>
+      `;
+
+      const pSel = document.getElementById('providerSelect');
+      pSel.innerHTML = '';
+      if ((emb.candidates || []).length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = '（未检测到 providers.local.json 中的 embedding_providers）';
+        pSel.appendChild(opt);
+      } else {
+        for (const p of emb.candidates) {
+          const opt = document.createElement('option');
+          opt.value = p.id || p.model_sig;
+          opt.textContent = `${p.id || p.model_id} (${p.model_sig})`;
+          if (emb.providerConfig && p.model_sig === emb.providerConfig.model_sig) opt.selected = true;
+          pSel.appendChild(opt);
+        }
+      }
+
+      const presetKeys = Object.keys(data.presets || {});
+      for (const selId of ['presetSelect', 'baselinePresetSelect', 'candidatePresetSelect']) {
+        const el = document.getElementById(selId);
+        const prev = el.value;
+        el.innerHTML = '';
+        for (const k of presetKeys) {
+          const opt = document.createElement('option');
+          opt.value = k;
+          opt.textContent = data.presets[k].label || k;
+          el.appendChild(opt);
+        }
+        if (prev && presetKeys.includes(prev)) el.value = prev;
+        else if (selId !== 'candidatePresetSelect') el.value = data.riverRules?.preset || 'balanced';
+        else el.value = presetKeys.includes('precision_research') ? 'precision_research' : (presetKeys[0] || 'balanced');
+      }
+
+      const regSel = document.getElementById('regressionSelect');
+      regSel.innerHTML = '<option value="">-- 选择预设回归问题或手动输入 --</option>';
+      for (const q of data.regressionQueries || []) {
+        const text = typeof q === 'string' ? q : q.query;
+        const opt = document.createElement('option');
+        opt.value = text;
+        opt.textContent = text;
+        regSel.appendChild(opt);
+      }
+      onPresetChange();
+    }
+
+    function onPresetChange() {
+      if (!STATE) return;
+      const p = document.getElementById('presetSelect').value;
+      document.getElementById('presetBadge').textContent = p;
+      document.getElementById('presetDesc').textContent = STATE.presets?.[p]?.description || '';
+    }
+
+    function readRulesOverrides() {
+      const diaries = document.getElementById('diariesInput').value
+        .split(',').map((s) => s.trim()).filter(Boolean);
+      const localWeight = Number(document.getElementById('advLocalWeight').value);
+      const transferWeight = Number(document.getElementById('advTransferWeight').value);
+      return {
+        query: { topK: Number(document.getElementById('topKInput').value) || 5 },
+        filters: { include_diaries: diaries.length > 0 ? diaries : null },
+        pathGeometry: { localWeight, transferWeight },
+        topology: {
+          topologyBonusCap: Number(document.getElementById('advTopoCap').value),
+          anchorBonusCap: Number(document.getElementById('advAnchorCap').value),
+          omegaGamma: Number(document.getElementById('advOmegaGamma').value)
+        },
+        directAnchor: {
+          semanticThreshold: Number(document.getElementById('advAnchorThresh').value)
+        }
+      };
+    }
+
+    async function runBake(confirmFullRebake = false) {
+      const providerId = document.getElementById('providerSelect').value;
+      const preset = document.getElementById('presetSelect').value || 'balanced';
+      const logEl = document.getElementById('bakeLog');
+      logEl.textContent = '正在烘焙 RiverMemo Topology V3.1 快照...';
+      const { status, data } = await api('/api/bake', 'POST', {
+        providerId,
+        preset,
+        rulesOverride: readRulesOverrides(),
+        confirmFullRebake
+      });
+      if (status === 409 && data.error === 'EMBEDDING_SIGNATURE_MISMATCH') {
+        document.getElementById('mismatchText').textContent =
+          `当前快照签名为 "${data.expectedSignature}"，所选向量服务签名为 "${data.incomingSignature}"。`;
+        document.getElementById('mismatchModal').classList.add('open');
+        logEl.textContent = '已触发签名失配熔断，等待用户确认全量重烘。';
+        return;
+      }
+      logEl.textContent = JSON.stringify(data, null, 2);
+      await refreshState();
+    }
+
+    function closeModal() {
+      document.getElementById('mismatchModal').classList.remove('open');
+    }
+
+    async function confirmFullRebake() {
+      closeModal();
+      await runBake(true);
+    }
+
+    async function runLint(fix) {
+      const { data } = await api(fix ? '/api/lint/fix' : '/api/lint', fix ? 'POST' : 'GET');
+      const badge = document.getElementById('lintBadge');
+      badge.textContent = `err=${data.errors}, warn=${data.warnings}`;
+      badge.className = 'badge ' + (data.errors > 0 ? 'danger' : data.warnings > 0 ? 'warn' : 'ok');
+      document.getElementById('lintOutput').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function saveRules() {
+      const preset = document.getElementById('presetSelect').value || 'balanced';
+      const { data } = await api('/api/rules', 'POST', { preset, rulesOverride: readRulesOverrides() });
+      document.getElementById('bakeLog').textContent = '规则已更新:\n' + JSON.stringify(data, null, 2);
+      await refreshState();
+    }
+
+    function pickRegressionQuery() {
+      const v = document.getElementById('regressionSelect').value;
+      if (v) document.getElementById('queryInput').value = v;
+    }
+
+    async function runComparison() {
+      const query = document.getElementById('queryInput').value.trim();
+      if (!query) return;
+      const providerId = document.getElementById('providerSelect').value;
+      const baselinePreset = document.getElementById('baselinePresetSelect').value;
+      const candidatePreset = document.getElementById('candidatePresetSelect').value;
+      const topK = Number(document.getElementById('topKInput').value) || 5;
+
+      const { ok, data } = await api('/api/test-query', 'POST', {
+        query,
+        providerId,
+        baselinePreset,
+        candidatePreset,
+        candidateRulesOverride: readRulesOverrides(),
+        topK
+      });
+      if (!ok) {
+        document.getElementById('diffContainer').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        return;
+      }
+
+      const bOmega = data.baseline?.trace?.topology?.omega;
+      const cOmega = data.candidate?.trace?.topology?.omega;
+      document.getElementById('traceBadge').textContent =
+        `Ω=${Number(cOmega?.omega ?? 0).toFixed(3)} (${cOmega?.regime || '-'})`;
+
+      const rows = (data.diff || []).map((row) => {
+        const rCls = row.rankDelta > 0 ? 'delta-pos' : row.rankDelta < 0 ? 'delta-neg' : '';
+        const rTxt = row.rankDelta === null ? '-' : (row.rankDelta > 0 ? `+${row.rankDelta}` : `${row.rankDelta}`);
+        const sCls = row.scoreDelta > 0 ? 'delta-pos' : row.scoreDelta < 0 ? 'delta-neg' : '';
+        return `<tr>
+          <td><strong>${row.title}</strong><br><span style="color:var(--muted);font-family:var(--mono)">${row.path}</span></td>
+          <td>${row.baselineRank ?? '-'} (${row.baselineScore.toFixed(4)})</td>
+          <td>${row.candidateRank ?? '-'} (${row.candidateScore.toFixed(4)})</td>
+          <td class="${rCls}">${rTxt}</td>
+          <td class="${sCls}">${row.scoreDelta >= 0 ? '+' : ''}${row.scoreDelta.toFixed(4)}</td>
+          <td>${row.role}</td>
+          <td style="font-family:var(--mono)">${(row.matchedTags || []).join(', ')}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('diffContainer').innerHTML = `
+        <table>
+          <thead><tr><th>记忆页</th><th>Baseline</th><th>Candidate</th><th>排名变化</th><th>分数变化</th><th>河网角色</th><th>命中标签</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <pre>Baseline Ω: ${JSON.stringify(bOmega)} | Matched: ${JSON.stringify(data.baseline?.trace?.observation?.matchedTags)}
+Candidate Ω: ${JSON.stringify(cOmega)} | Matched: ${JSON.stringify(data.candidate?.trace?.observation?.matchedTags)}</pre>
+      `;
+    }
+
+    refreshState();
+  </script>
+</body>
+</html>

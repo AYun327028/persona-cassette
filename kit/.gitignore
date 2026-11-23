@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Local secrets & machine-specific model provider endpoints / cartridge slots
+providers.local.json
+cartridges.local.json
+.env
+.env.*
+
+# Logs & temp workspaces
+*.log
+tmp/
+.DS_Store
+Thumbs.db

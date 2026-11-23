@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "pmv-memory": {
+      "command": "node",
+      "args": [
+        "./mcp-server.mjs"
+      ]
+    }
+  }
+}
